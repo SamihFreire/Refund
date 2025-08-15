@@ -6,6 +6,8 @@ const category = document.getElementById("category");
 
 // Seleciona os elementos da lista
 const expenseList = document.querySelector("ul");
+const expensesTotal = document.querySelector("aside header h2");
+const expenseQuantity = document.querySelector("aside header p span");
 
 //Monitorando a mudança do input
 amount.oninput = () => {
@@ -96,7 +98,66 @@ function expenseAdd(newExpense) {
         //Adiciona o item na lista
         expenseList.append(expenseItem);
 
+        //Atualiza os totais
+        updateTotals();
+
     } catch (error) {
         alert("Não foi possível atualizar a lista de despesas.");
+    }
+}
+
+// Atualiza os totais
+function updateTotals() {
+    try {
+        // Recupera todos os itens (li) da lista (ul)
+        const items = expenseList.children;
+
+        // Atualiza a quantidade de itens da lista
+        expenseQuantity.textContent = `${items.length} ${
+            items.length > 1 ? "despesas" : "despesa"
+        }`;
+
+        // Variável para incrementar o total
+        let total = 0
+
+        // Percorre cada item (li) da lista (ul)
+        for(let item = 0; item < items.length; item++) {
+            const itemAmount = items[item].querySelector(".expense-amount");
+
+            // Remove caracteres não numéricos e substitui a virgula por ponto
+            let value = itemAmount.textContent.replace(/[^\d,]/g, "").replace(",", ".");
+            
+            // Convert o valor para float
+            value = parseFloat(value);
+
+            // Verifica se o número é válido
+            if(isNaN(value)) {
+                return alert("Não foi possível calular o total. O valor não parece ser um número.")
+            }
+
+            total += Number(value);
+        }
+        console.log("valor total: ", total);
+
+        // Forma 1 de formatar o valor
+        // expensesTotal.innerHTML = `<small>R$</small>
+        //                            ${String(formatCurrencyBRL(total))
+        //                            .toUpperCase()
+        //                            .replace("R$", "")}`;
+
+        // Forma 2 de formatar o valor
+        // Criar span para adicionar o R$ formatado
+        const symbolBRL = document.createElement("small");
+        symbolBRL.textContent = "R$";
+
+        total = formatCurrencyBRL(total).toUpperCase().replace("R$", "");
+
+        // Limpa o conteúdo do elemento.
+        expensesTotal.innerHTML = "";
+        expensesTotal.append(symbolBRL, total);
+
+    } catch (error) {
+        console.log(error)
+        alert("Não foi possível carregar os totais.")
     }
 }
