@@ -161,3 +161,13 @@ function updateTotals() {
         alert("Não foi possível carregar os totais.")
     }
 }
+
+expenseList.addEventListener("click", function (event) {
+    if(event.target.classList.contains("remove-icon")) {
+        const item = event.target.closest(".expense")
+
+        item.remove();
+    }
+
+    updateTotals();
+})
